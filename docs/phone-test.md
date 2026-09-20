@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. The earlier WebM preview problem was addressed by preferring MP4. One actual phone JSON has now been inspected locally, and the retransferred MP4 passes the checker's filename, byte-count and container-header checks after restoring its expected filename. The next small step is one 30-second stationary outdoor iPhone test to inspect location continuity over a longer recording. Video decoding on the laptop, frame alignment, broader location quality and Android testing remain pending.
+The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. Two actual iPhone exports have now been inspected locally: the first 9.32-second test and a 25.66-second outdoor follow-up. Both transferred MP4s pass filename, byte-count and container-header checks after restoring their expected filenames. The outdoor export contains 21 location readings during recording, with median device-reported accuracy of 14.47 metres and an initial 4.45-second measurement gap. The user has no Android phone available and asked to continue with iPhone; the next small checkpoint is switching away from Safari during a short recording. Android compatibility, video decoding on the laptop, frame alignment, broader location quality and interruption testing remain pending.
 
 First open the page on the laptop. Run in PowerShell:
 
@@ -44,8 +44,8 @@ Keep a separate result for each device:
 | MP4 plays on the page | Pending | Confirmed by user |
 | Downloaded MP4 plays in Files | Pending | Confirmed by user |
 | Intended camera selection and road image quality | Pending | Pending |
-| Video and matching JSON both saved | Pending | Retransferred MP4 passes filename, byte-count and header checks; JSON inspected |
-| Reading count, accuracy range and largest time gap | Pending | One 9.32 s export inspected; see observations below |
+| Video and matching JSON both saved | Pending | Two MP4/JSON exports pass filename, byte-count and header checks; JSON inspected |
+| Reading count, accuracy range and largest time gap | Pending | 9.32 s and 25.66 s exports inspected; see comparison below |
 | Switching away stops or interrupts recording as expected | Pending | Pending |
 
 The first test evaluates capture feasibility. It does not evaluate pothole detection, road accuracy, long journeys or background recording.
@@ -75,7 +75,24 @@ The user then retransferred the original through WhatsApp's Document option. The
 
 The checker printed no timing review flags because the 4.83-second gap is below its five-second heuristic. Location coverage still needs evaluation despite passing the limited file checks. Private footage, coordinates and absolute timestamps remain outside Git.
 
-Next, make one 30-second stationary outdoor iPhone recording. Enable camera and location, wait about 20 seconds after the first location reading, then record with the page visible and the screen unlocked. Save both exports and transfer them as documents into `data/iphone-outdoor/`, preserving their names. Keeping this test in a separate folder preserves the earlier result. Run the checker with `data/iphone-outdoor` as its argument once both files arrive. This test investigates reading gaps and reported accuracy; waiting does not guarantee better accuracy.
+### Outdoor follow-up observations
+
+The user completed the requested outdoor follow-up and supplied one MP4 and its JSON in `data/iphone-outdoor/`. The recorded request-to-stop duration was 25.66 seconds, rather than the suggested 30 seconds; this is sufficient to inspect a longer sample. The file arrived as `IMG_7480.MP4`. After checking its 5,880,873-byte size against the JSON and recognizing its MP4 header, its expected filename was restored. The JSON was left unchanged. Running `scripts/inspect_recording.py data/iphone-outdoor` passed the limited file checks and reported no timing review flags.
+
+| Measurement | First test | Outdoor follow-up |
+|---|---|---|
+| Requested recording duration | 9.32 s | 25.66 s |
+| Location readings during recording | 4 | 21 |
+| Location readings before / after recording | 5 / 0 | 5 / 0 |
+| Largest gap between readings during recording | 1.95 s | 3.88 s |
+| First reading after Start | 4.83 s | 4.45 s |
+| Last reading to Stop | 0.54 s | 0.32 s |
+| Reported accuracy, best / median / worst | 15.94 / 18.81 / 19.29 m | 11.35 / 14.47 / 20.56 m |
+| Epoch versus monotonic duration discrepancy | 0.00 ms | -1.00 ms |
+
+The outdoor JSON records portrait camera settings of 720 by 1280 pixels at 30 fps and a user-requested stop. Its median reported accuracy is better, but its worst reported accuracy and largest interval between measurements are worse. The initial gap remains, so this is evidence that readings were saved over a longer test, not proof of continuous coverage or exact road/pothole positions. The one-millisecond clock discrepancy does not indicate a large clock change. No decoded-video or first-frame synchronization check was performed.
+
+The user confirmed that no Android phone is available and asked to continue with iPhone. Android compatibility remains pending. Next, start one short iPhone recording, switch to the Home Screen after about five seconds without pressing Stop, wait about two seconds, and return to Safari without refreshing. Check whether recording stopped and whether an interruption warning appears. The expected stop reason is `page_hidden`; actual device behavior has not yet been observed. Report the visible result before requesting another export transfer.
 
 ### Running the checker
 
