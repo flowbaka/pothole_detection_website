@@ -6,7 +6,7 @@ Computer vision final-year project for Biratnagar International College, Nepal.
 
 A minimal FastAPI backend with `GET /`, `GET /health`, automatic API documentation at `/docs`, and a phone recording experiment at `/capture`.
 
-The recording page captures a short video and timestamped browser location readings, then offers two local downloads. The user confirmed iPhone camera/location access and reported downloads, but the saved WebM would not preview in Files. The recorder now prefers H.264/MP4 when supported and offers playback on the page. Automated desktop checks produced real MP4 and WebM files with working playback using simulated camera/location inputs; an iPhone MP4 retry is pending. Location quality, timing and Android compatibility remain to be verified. Detection, uploads, database storage and the map are still future milestones.
+The recording page captures a short video and timestamped browser location readings, then offers two local downloads. The user confirmed iPhone camera/location access and MP4 playback both on the page and after downloading to Files. The recorder prefers H.264/MP4 when supported. A local Python checker can summarize the saved JSON and check its matching video file without printing coordinates. Actual location quality/timing and Android compatibility remain to be verified. Detection, uploads, database storage and the map are still future milestones.
 
 ## Run on Windows (PowerShell)
 
@@ -50,6 +50,8 @@ Open http://127.0.0.1:8001/capture on the laptop to inspect the recording page. 
 | `app/static/capture.css` | Simple layout for laptop and phone screens. |
 | `tests/capture-browser.cjs` | Browser checks with simulated devices; requires existing Node and Chrome. |
 | `scripts/phone_https.py` | Prepares local certificates and starts the HTTPS phone test server. |
+| `scripts/inspect_recording.py` | Summarizes recording timestamps, location gaps and accuracy estimates without printing coordinates. |
+| `tests/test_inspect_recording.py` | Checks timing, malformed exports, file pairing and private output using synthetic fixtures. |
 | `requirements.txt` | Lists the Python packages to install. |
 | `.gitignore` | Keeps virtual environments, secrets, footage and model weights out of Git. |
 
@@ -73,7 +75,7 @@ git log --oneline -5
 ## Development order
 
 1. Backend foundation — this starter.
-2. Phone feasibility experiment: recording page and local HTTPS helper implemented; iPhone page access confirmed by the user; Android access and real recording tests pending.
+2. Phone feasibility experiment: iPhone camera, location and both MP4 playback checks confirmed by the user. Next: inspect the real export with the local checker, then test Android and interruptions.
 3. PostgreSQL reports and photo uploads; validate files and coordinates.
 4. Leaflet/OpenStreetMap page with clickable report markers and photos, initially using manually confirmed locations.
 5. Pothole detection baseline and evaluation on held-out local Nepal footage.

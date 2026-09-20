@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The recording page is implemented at `/capture`. It uses browser APIs and needs no additional Python or frontend dependencies. The user confirmed iPhone camera/location access and reported downloads with no warning, but the saved video would not open. Their screenshot shows a 1.8 MB WebM file in the iPhone file viewer. The recorder now prefers H.264/MP4 when supported and offers playback before download. A new iPhone recording is needed to verify this change. The original video/JSON contents and location continuity have not been inspected; Android testing is pending.
+The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. The earlier WebM preview problem was addressed by preferring MP4. The next small checkpoint is inspecting the saved JSON and its matching video with `scripts/inspect_recording.py`. The actual phone export has not yet been copied into this workspace or inspected; location continuity, timing and Android testing remain pending.
 
 First open the page on the laptop. Run in PowerShell:
 
@@ -19,7 +19,7 @@ Camera and geolocation require permission and a secure browser context. A page a
 
 For both phones, use trusted HTTPS over the same private Wi-Fi network. The project now includes a [local HTTPS helper and phone setup instructions](phone-https.md). It uses the OpenSSL already included with Git for Windows to generate a certificate for the laptop's LAN address. Its public root certificate must be installed and trusted on each test phone. On iPhone, a manually installed certificate also needs full trust enabled under Settings > General > About > Certificate Trust Settings; see [Apple's instructions](https://support.apple.com/en-us/102390). Exact Android settings vary by device.
 
-Project-local certificates have been generated and HTTPS verified from the laptop. The user installed the test certificate on the iPhone and confirmed page access. Android access and real recording remain to be verified. The helper does not change device trust or firewall settings automatically. The local HTTPS option needs no paid hosting or tunnel service. The laptop must stay running and reachable; a changed LAN address requires a new server certificate. A test certificate authority changes device trust: keep its private key private, install only your own public certificate, and remove its trust after the experiment. Clients will not need to install development certificates for a future publicly hosted HTTPS site.
+Project-local certificates have been generated and HTTPS verified from the laptop. The user installed the test certificate on the iPhone and confirmed page access and MP4 recording/playback. Android access remains untested. The helper does not change device trust or firewall settings automatically. The local HTTPS option needs no paid hosting or tunnel service. The laptop must stay running and reachable; a changed LAN address requires a new server certificate. A test certificate authority changes device trust: keep its private key private, install only your own public certificate, and remove its trust after the experiment. Clients will not need to install development certificates for a future publicly hosted HTTPS site.
 
 Android/Chrome also supports [USB port forwarding](https://developer.chrome.com/docs/devtools/remote-debugging/local-server). It maps phone `localhost:8001` to laptop `localhost:8001` for a tethered test. That is an Android development option; it does not solve iPhone access.
 
@@ -41,7 +41,9 @@ Keep a separate result for each device:
 | HTTPS recording page opens after certificate installation | Pending | Confirmed by user |
 | Camera preview works | Pending | Confirmed by user after startup fix |
 | Location readings arrive | Pending | Confirmed by user after enabling Safari Websites location permission |
-| Intended camera selection and saved video playback | Pending | WebM did not preview in Files; new MP4 retry pending |
+| MP4 plays on the page | Pending | Confirmed by user |
+| Downloaded MP4 plays in Files | Pending | Confirmed by user |
+| Intended camera selection and road image quality | Pending | Pending |
 | Video and matching JSON both saved | Pending | Downloads reported by user; file contents not yet inspected |
 | Reading count, accuracy range and largest time gap | Pending | Pending |
 | Switching away stops or interrupts recording as expected | Pending | Pending |
@@ -54,7 +56,30 @@ The original format order selected WebM before MP4. Newer Safari versions can re
 
 The new order requests H.264 in MP4, then generic MP4, then WebM if MP4 is unavailable. The saved extension follows the actual recorded MIME type, and `video_requested_mime_type` preserves the requested format in the JSON. The page includes a playback control and identifies the download format. A WebM fallback includes a viewer-compatibility notice.
 
-Refresh Safari at `/capture?video=3`, make a new short recording, and check both playback on the page and the downloaded `.mp4`. Existing WebM files are not converted by this change; changing an extension does not convert a video. Desktop Chrome tests verified MP4 container bytes, advancing playback and matching metadata, plus a playable WebM fallback. Actual iPhone MP4 playback remains pending.
+The user has confirmed that the new MP4 plays both on the page and after download. Existing WebM files are not converted by this change; changing an extension does not convert a video. Desktop Chrome tests also verified MP4 container bytes, advancing playback and matching metadata, plus a playable WebM fallback. These observations do not establish support across all iPhone models or Android browsers.
+
+## Next checkpoint: inspect one saved test locally
+
+Copy the matching `.mp4` and `.json` files from the successful iPhone test into `C:\Users\kshit\Documents\pothole_project\data`. Preserve their original names. This folder is ignored by Git; phone exports must not be committed.
+
+From PowerShell:
+
+```powershell
+Set-Location 'C:\Users\kshit\Documents\pothole_project'
+.\.pothholevenv\Scripts\python.exe scripts\inspect_recording.py
+```
+
+With exactly one JSON in `data/`, the checker selects it automatically. For multiple tests, supply the exact path to one JSON as an argument. The script uses Python's standard library; no package installation is needed.
+
+The summary omits coordinates and absolute timestamps. It reports the requested recording duration, reading counts before/during/after recording, largest gap between readings, longest gap including the recording edges, and the best/median/worst reported accuracy. A gap is time with no location measurement. The median is the middle accuracy estimate after sorting, so one unusually poor reading does not dominate it. Smaller reported metre values indicate a tighter device estimate; they do not prove actual positional accuracy.
+
+The five-second gap threshold is a prompt to review this experiment, not a validated road-mapping standard. A warm-up reading before recording is valid but cannot stand in for coverage throughout recording. A detected clock change suppresses gap metrics that would be misleading. The video check verifies the exported byte count and a recognizable container header; it does not decode the video, measure its actual duration or calibrate the first frame against GPS.
+
+Share only the printed summary for the next discussion. We will decide what to test next from the real measurements. Automated checker tests use synthetic timestamps and tiny header fixtures, not private footage:
+
+```powershell
+.\.pothholevenv\Scripts\python.exe -m unittest discover -s tests -p test_inspect_recording.py -v
+```
 
 ## Camera preview troubleshooting checkpoint
 
