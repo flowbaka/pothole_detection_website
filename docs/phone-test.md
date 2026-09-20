@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. The earlier WebM preview problem was addressed by preferring MP4. One actual phone JSON has now been inspected locally. Its accompanying WhatsApp-transferred MP4 has a different filename and byte count from the export, so the next step is transferring the original MP4 as a document/file attachment. Video pairing, frame alignment, broader location quality and Android testing remain pending.
+The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. The earlier WebM preview problem was addressed by preferring MP4. One actual phone JSON has now been inspected locally, and the retransferred MP4 passes the checker's filename, byte-count and container-header checks after restoring its expected filename. The next small step is one 30-second stationary outdoor iPhone test to inspect location continuity over a longer recording. Video decoding on the laptop, frame alignment, broader location quality and Android testing remain pending.
 
 First open the page on the laptop. Run in PowerShell:
 
@@ -44,7 +44,7 @@ Keep a separate result for each device:
 | MP4 plays on the page | Pending | Confirmed by user |
 | Downloaded MP4 plays in Files | Pending | Confirmed by user |
 | Intended camera selection and road image quality | Pending | Pending |
-| Video and matching JSON both saved | Pending | JSON inspected; transferred MP4 differs in name and size; original transfer pending |
+| Video and matching JSON both saved | Pending | Retransferred MP4 passes filename, byte-count and header checks; JSON inspected |
 | Reading count, accuracy range and largest time gap | Pending | One 9.32 s export inspected; see observations below |
 | Switching away stops or interrupts recording as expected | Pending | Pending |
 
@@ -71,9 +71,11 @@ The user supplied a real JSON and a video transferred through WhatsApp. Local in
 - Exported epoch and monotonic durations agreed (0.00 ms discrepancy). This does not establish first-frame alignment.
 - The JSON expects a 2,245,513-byte MP4. The transferred video is 1,552,161 bytes and has a WhatsApp filename. Its header identifies an MP4 container, but its original-file pairing and playback were not verified locally. The size difference is consistent with processing during transfer; its cause is not proven.
 
-Next, transfer the original saved MP4 using WhatsApp's Document attachment option, keeping its original name, and place it beside the existing JSON in `data/`. WhatsApp notes that shared media can be compressed and documents can be selected separately in its [iPhone attachment instructions](https://faq.whatsapp.com/453914586839706/?cms_platform=iphone). Renaming the smaller file or changing the JSON's expected size would not restore the original recording. No new recording is needed if the original is still in Files.
+The user then retransferred the original through WhatsApp's Document option. The new file arrived as `IMG_7479.MP4`, with the expected 2,245,513-byte size and an MP4 header. Its filename was restored to the name recorded in the JSON, and the existing checker was rerun successfully. These checks establish file consistency, not cryptographic identity or decoded playback; no original-file checksum is available. The JSON was left unchanged. WhatsApp notes that shared media can be compressed and documents can be selected separately in its [iPhone attachment instructions](https://faq.whatsapp.com/453914586839706/?cms_platform=iphone).
 
-The checker printed no timing review flags because the 4.83-second gap is below its five-second heuristic. This is not a full pass: the video is unmatched, and location coverage still needs evaluation. Private footage, coordinates and absolute timestamps remain outside Git.
+The checker printed no timing review flags because the 4.83-second gap is below its five-second heuristic. Location coverage still needs evaluation despite passing the limited file checks. Private footage, coordinates and absolute timestamps remain outside Git.
+
+Next, make one 30-second stationary outdoor iPhone recording. Enable camera and location, wait about 20 seconds after the first location reading, then record with the page visible and the screen unlocked. Save both exports and transfer them as documents into `data/iphone-outdoor/`, preserving their names. Keeping this test in a separate folder preserves the earlier result. Run the checker with `data/iphone-outdoor` as its argument once both files arrive. This test investigates reading gaps and reported accuracy; waiting does not guarantee better accuracy.
 
 ### Running the checker
 
