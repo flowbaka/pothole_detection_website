@@ -1,0 +1,26 @@
+.venv/
+.potholevenv/
+.pothholevenv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+.pytest_cache/
+data/
+uploads/
+weights/
+*.pt
+*.onnx
+# Private recordings and paired location exports from the phone experiment.
+phone-test-*
+*.mp4
+*.webm
+*.mov
+# Local HTTPS certificates and private signing/server keys.
+.local-https/
+# Also protect private-key bundles if copied outside the certificate folder.
+*.key
+*.pem
+*.p12
+*.pfx

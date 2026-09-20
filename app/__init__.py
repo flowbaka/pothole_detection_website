@@ -1,0 +1,1 @@
+"""Pothole reporting application."""

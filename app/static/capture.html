@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phone recording test | Pothole Reporting</title>
+  <link rel="stylesheet" href="/static/capture.css">
+  <script src="/static/capture.js?v=3" defer></script>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Pothole reporting / Step 2</p>
+    <h1>Phone recording test</h1>
+    <p>Record a short video with timestamped location readings. This experiment
+      checks your phone before we build journey processing.</p>
+    <ol>
+      <li>Enable the camera and check its preview first.</li>
+      <li>Enable location outdoors, wait for a reading, then record for 20–30 seconds.</li>
+      <li>Stop and save both files before closing this page.</li>
+    </ol>
+    <p class="notice">Keep this page visible and your screen unlocked. Recording stops
+      after 60 seconds or when the page is hidden. No microphone is used.
+      Do not operate the phone while driving.</p>
+
+    <div class="actions">
+      <button id="prepare" type="button">1. Enable camera</button>
+      <button id="location" type="button" disabled>2. Enable location</button>
+      <button id="start" type="button" disabled>3. Start recording</button>
+      <button id="stop" type="button" disabled>4. Stop</button>
+      <button id="cancel" type="button" disabled>Cancel setup</button>
+    </div>
+    <p id="status" role="status" aria-live="polite">Start by enabling the camera.</p>
+    <video id="preview" autoplay muted playsinline webkit-playsinline aria-label="Camera preview"></video>
+    <p id="camera-status" role="status">Camera has not been requested.</p>
+    <button id="show-preview" type="button" hidden>Show camera preview</button>
+    <dl class="metrics">
+      <div><dt>Recording time</dt><dd id="elapsed">0 s</dd></div>
+      <div><dt>Location readings</dt><dd id="count">0</dd></div>
+      <div><dt>Latest accuracy estimate</dt><dd id="accuracy">Waiting</dd></div>
+      <div><dt>Latest reading age</dt><dd id="age">Waiting</dd></div>
+    </dl>
+    <p id="location-status" role="status">Location has not been requested.</p>
+    <section id="downloads" hidden aria-labelledby="save-title">
+      <h2 id="save-title">Save your test</h2>
+      <p id="summary"></p>
+      <video id="recorded-video" controls playsinline preload="metadata" aria-label="Recorded video playback"></video>
+      <p id="playback-status" role="status"></p>
+      <div class="actions">
+        <a id="video-download" download>Save video</a>
+        <a id="json-download" download>Save timing &amp; locations (JSON)</a>
+      </div>
+      <p>Both files have the same test ID. Play the saved video to check it works.
+        Your JSON file contains private location data; keep it out of Git.</p>
+      <button id="reset" type="button">Start another test</button>
+    </section>
+    <p class="note">This page does not upload your video or location readings.
+      Unsaved recordings are lost when you refresh or close the page.
+      Location readings describe the phone's approximate position, not a pothole's exact position.</p>
+    <noscript>Enable JavaScript to use this recording experiment.</noscript>
+  </main>
+</body>
+</html>
