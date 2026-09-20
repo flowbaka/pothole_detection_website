@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. The earlier WebM preview problem was addressed by preferring MP4. The next small checkpoint is inspecting the saved JSON and its matching video with `scripts/inspect_recording.py`. The actual phone export has not yet been copied into this workspace or inspected; location continuity, timing and Android testing remain pending.
+The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. The earlier WebM preview problem was addressed by preferring MP4. One actual phone JSON has now been inspected locally. Its accompanying WhatsApp-transferred MP4 has a different filename and byte count from the export, so the next step is transferring the original MP4 as a document/file attachment. Video pairing, frame alignment, broader location quality and Android testing remain pending.
 
 First open the page on the laptop. Run in PowerShell:
 
@@ -44,8 +44,8 @@ Keep a separate result for each device:
 | MP4 plays on the page | Pending | Confirmed by user |
 | Downloaded MP4 plays in Files | Pending | Confirmed by user |
 | Intended camera selection and road image quality | Pending | Pending |
-| Video and matching JSON both saved | Pending | Downloads reported by user; file contents not yet inspected |
-| Reading count, accuracy range and largest time gap | Pending | Pending |
+| Video and matching JSON both saved | Pending | JSON inspected; transferred MP4 differs in name and size; original transfer pending |
+| Reading count, accuracy range and largest time gap | Pending | One 9.32 s export inspected; see observations below |
 | Switching away stops or interrupts recording as expected | Pending | Pending |
 
 The first test evaluates capture feasibility. It does not evaluate pothole detection, road accuracy, long journeys or background recording.
@@ -59,6 +59,23 @@ The new order requests H.264 in MP4, then generic MP4, then WebM if MP4 is unava
 The user has confirmed that the new MP4 plays both on the page and after download. Existing WebM files are not converted by this change; changing an extension does not convert a video. Desktop Chrome tests also verified MP4 container bytes, advancing playback and matching metadata, plus a playable WebM fallback. These observations do not establish support across all iPhone models or Android browsers.
 
 ## Next checkpoint: inspect one saved test locally
+
+### First local export observations
+
+The user supplied a real JSON and a video transferred through WhatsApp. Local inspection found:
+
+- Requested duration: 9.32 seconds. Camera settings recorded in the JSON: 720 by 1280 pixels, 30 fps (portrait).
+- Four location measurements during recording, five before it, and none after it. The largest interval between measurements during recording was 1.95 seconds.
+- The first measurement during recording was 4.83 seconds after Start; the last was 0.54 seconds before Stop. The earlier measurements do not establish fresh coverage of that initial gap.
+- Device-reported accuracy ranged from 15.94 to 19.29 metres, with a median of 18.81 metres. These estimates do not establish the exact position of a pothole.
+- Exported epoch and monotonic durations agreed (0.00 ms discrepancy). This does not establish first-frame alignment.
+- The JSON expects a 2,245,513-byte MP4. The transferred video is 1,552,161 bytes and has a WhatsApp filename. Its header identifies an MP4 container, but its original-file pairing and playback were not verified locally. The size difference is consistent with processing during transfer; its cause is not proven.
+
+Next, transfer the original saved MP4 using WhatsApp's Document attachment option, keeping its original name, and place it beside the existing JSON in `data/`. WhatsApp notes that shared media can be compressed and documents can be selected separately in its [iPhone attachment instructions](https://faq.whatsapp.com/453914586839706/?cms_platform=iphone). Renaming the smaller file or changing the JSON's expected size would not restore the original recording. No new recording is needed if the original is still in Files.
+
+The checker printed no timing review flags because the 4.83-second gap is below its five-second heuristic. This is not a full pass: the video is unmatched, and location coverage still needs evaluation. Private footage, coordinates and absolute timestamps remain outside Git.
+
+### Running the checker
 
 Copy the matching `.mp4` and `.json` files from the successful iPhone test into `C:\Users\kshit\Documents\pothole_project\data`. Preserve their original names. This folder is ignored by Git; phone exports must not be committed.
 
