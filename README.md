@@ -4,7 +4,7 @@ Computer vision final-year project for Biratnagar International College, Nepal.
 
 ## What works now
 
-A minimal FastAPI backend with `GET /`, `GET /health`, automatic API documentation at `/docs`, and a phone recording experiment at `/capture`.
+A minimal FastAPI backend with `GET /`, `GET /health`, a PostgreSQL check at `GET /health/database`, automatic API documentation at `/docs`, and a phone recording experiment at `/capture`. The user confirmed the `pothole_app` login to `pothole_db`; the new Python connection awaits local password setup. See [database setup](docs/database-setup.md).
 
 The recording page captures a short video and timestamped browser location readings, then offers two local downloads. The user confirmed iPhone camera/location access, MP4 playback both on the page and after downloading to Files, and recording stopping with an interruption message when leaving Safari. Two real iPhone exports passed the local checker's timing-consistency and video filename, size and header checks. The outdoor test still had a 4.45-second initial location gap; exact video/location alignment and road-position accuracy remain unverified. Android testing is pending because no phone is available. The recorder prefers H.264/MP4 when supported. Detection, uploads, database storage and the map are still future milestones.
 
@@ -44,6 +44,10 @@ Open http://127.0.0.1:8001/capture on the laptop to inspect the recording page. 
 | File | Purpose |
 |---|---|
 | `app/main.py` | Creates the API, serves `/capture`, and exposes its static assets. |
+| `app/database.py` | Reads local connection settings and checks PostgreSQL with `SELECT 1`. |
+| `scripts/configure_database.py` | Prompts for the application password locally, checks it, and saves the ignored `.env`. |
+| `.env.example` | Password-free reference for database settings. |
+| `tests/test_database.py` | Checks configuration, password preservation, connection failures and endpoint responses. |
 | `app/__init__.py` | Marks `app` as a Python package. |
 | `app/static/capture.html` | Recording controls, camera preview, status and download links. |
 | `app/static/capture.js` | Requests permissions, records video, timestamps locations and prepares downloads. |

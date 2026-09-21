@@ -1,6 +1,6 @@
 # Database setup: login and project database
 
-The user has confirmed a local PostgreSQL administrator login and creation of `pothole_db`, owned by `postgres`. The current small milestone is preparing the `pothole_app` login; its actual login test and the backend connection remain later steps.
+The user has confirmed creation of `pothole_db`, creation and grants for `pothole_app`, and a successful password-authenticated login as `pothole_app` with superuser off. The current milestone connects FastAPI to PostgreSQL. Code and local configuration helper are prepared; the real Python connection awaits the user's password entry on their laptop.
 
 ## Verified locally
 
@@ -8,7 +8,9 @@ The user has confirmed a local PostgreSQL administrator login and creation of `p
 - `pg_isready` reports that `127.0.0.1:5432` accepts connections.
 - Installed `psql` client version: 18.6, under `C:\Program Files\PostgreSQL\18\bin`.
 - The initial connection attempt without a password returned `no password supplied`. The user then ran the password-prompted command and supplied successful connection information: database/user `postgres`, host `127.0.0.1`, port `5432`.
-- The user's output confirmed `CREATE DATABASE` and a row showing `pothole_db` owned by `postgres`. Application account creation is not yet confirmed. FastAPI is not connected to PostgreSQL yet.
+- The user's output confirmed `CREATE DATABASE` and a row showing `pothole_db` owned by `postgres`.
+- The user confirmed `pothole_app` with superuser `f` and login/connection/table-creation privileges `t`. A subsequent `\conninfo` confirmed password-authenticated access as `pothole_app` to `pothole_db`, host `127.0.0.1`, port `5432`, superuser off.
+- A successful connection through the new Python driver and endpoint has not yet been demonstrated with the real application password.
 
 ## User step: verify your login
 
@@ -37,7 +39,7 @@ Enter the installation password locally when prompted. A newly created database 
 
 The user ran this script and shared successful creation output. No project tables are created in this step.
 
-## Current user step: create the application login
+## Completed user step: create the application login
 
 Run in PowerShell from the project folder:
 
@@ -57,6 +59,37 @@ Expected final row: `pothole_app`, followed by `f` for superuser and `t` for log
 
 The changes run in a transaction. Connecting to the wrong database, an existing role, an empty password or a SQL error prevents completion; an uncommitted transaction rolls back when the script exits. If the role already exists, stop and report the error rather than deleting it or resetting its password. A successful run leaves `postgres` as database owner.
 
-The script was reviewed against PostgreSQL 18 documentation; it has not been run in an authenticated session here. Account creation remains pending the user's result. Next, test the new login separately before connecting FastAPI.
+The user ran this step and supplied successful permission results, then confirmed a separate login as `pothole_app`. The backend can now be configured with that account.
+
+## Current user step: configure the Python connection
+
+The project's virtual environment now includes Psycopg 3.3.6 and python-dotenv 1.2.3. On another checkout, install `requirements.txt` first. Run:
+
+```powershell
+Set-Location 'C:\Users\kshit\Documents\pothole_project'
+.\.pothholevenv\Scripts\python.exe -m scripts.configure_database
+```
+
+Enter the **pothole_app** password at the hidden prompt. The helper runs `SELECT 1`, closes the connection, and saves settings to the ignored `.env` only after success. It preserves other environment-file keys and handles special password characters. Passwords must stay out of chat and Git. `.env.example` contains only defaults and an empty password.
+
+Expected success: `Database connection OK. Settings saved to the Git-ignored .env file.` Share that message or the generic failure; no password is needed in chat. Configuration is read from this project's `.env` regardless of the launch directory, with process `DB_*` environment variables taking precedence. If those are already set, they override saved values until removed from that process.
+
+After setup succeeds, start or restart the API in PowerShell:
+
+```powershell
+.\.pothholevenv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8001
+```
+
+Open `http://127.0.0.1:8001/health/database`. Success returns HTTP 200 and `{"status":"ok","database":"connected"}`. Missing/invalid settings or a database failure return HTTP 503 with a generic message, never the driver exception or password. `GET /health` still checks only the API process. The database check uses a three-second connection timeout and a three-second statement timeout. It creates no tables and uploads no recordings.
+
+Seven automated tests cover missing configuration, invalid ports, literal password handling and environment precedence, connection cleanup, real driver refusal on an unused local port, setup success/failure, and API success/error responses with sanitized output. Successful database queries in tests are simulated; they are not evidence of authentication with the user's password. Run:
+
+```powershell
+.\.pothholevenv\Scripts\python.exe -m unittest discover -s tests -p test_database.py -v
+```
+
+The next checkpoint after a real successful API check will add the first report table.
+
+Driver/configuration references: [Psycopg connections](https://www.psycopg.org/psycopg3/docs/basic/usage.html), [python-dotenv](https://bbc2.github.io/python-dotenv/reference/).
 
 References: [psql file execution and password prompts](https://www.postgresql.org/docs/18/app-psql.html), [CREATE DATABASE](https://www.postgresql.org/docs/18/sql-createdatabase.html), [CREATE ROLE](https://www.postgresql.org/docs/18/sql-createrole.html), [schema permissions](https://www.postgresql.org/docs/18/ddl-schemas.html).
