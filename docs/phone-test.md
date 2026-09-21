@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. Two actual iPhone exports have now been inspected locally: the first 9.32-second test and a 25.66-second outdoor follow-up. Both transferred MP4s pass filename, byte-count and container-header checks after restoring their expected filenames. The outdoor export contains 21 location readings during recording, with median device-reported accuracy of 14.47 metres and an initial 4.45-second measurement gap. The user has no Android phone available and asked to continue with iPhone; the next small checkpoint is switching away from Safari during a short recording. Android compatibility, video decoding on the laptop, frame alignment, broader location quality and interruption testing remain pending.
+The user has confirmed iPhone camera/location access and successful MP4 playback both on the recording page and after downloading to Files. Two actual iPhone exports have now been inspected locally: the first 9.32-second test and a 25.66-second outdoor follow-up. Both transferred MP4s pass filename, byte-count and container-header checks after restoring their expected filenames. The outdoor export contains 21 location readings during recording, with median device-reported accuracy of 14.47 metres and an initial 4.45-second measurement gap. The user also confirmed that switching away from Safari stopped recording, displayed an interruption message and allowed saving an MP4. This completes the current iPhone interruption checkpoint by user observation. Android compatibility, playback of the interrupted clip, video decoding on the laptop, frame alignment and broader location quality remain pending. No Android phone is currently available.
 
 First open the page on the laptop. Run in PowerShell:
 
@@ -46,7 +46,7 @@ Keep a separate result for each device:
 | Intended camera selection and road image quality | Pending | Pending |
 | Video and matching JSON both saved | Pending | Two MP4/JSON exports pass filename, byte-count and header checks; JSON inspected |
 | Reading count, accuracy range and largest time gap | Pending | 9.32 s and 25.66 s exports inspected; see comparison below |
-| Switching away stops or interrupts recording as expected | Pending | Pending |
+| Switching away stops or interrupts recording as expected | Pending | Confirmed by user: stopped, interruption message shown, MP4 saved |
 
 The first test evaluates capture feasibility. It does not evaluate pothole detection, road accuracy, long journeys or background recording.
 
@@ -92,7 +92,13 @@ The user completed the requested outdoor follow-up and supplied one MP4 and its 
 
 The outdoor JSON records portrait camera settings of 720 by 1280 pixels at 30 fps and a user-requested stop. Its median reported accuracy is better, but its worst reported accuracy and largest interval between measurements are worse. The initial gap remains, so this is evidence that readings were saved over a longer test, not proof of continuous coverage or exact road/pothole positions. The one-millisecond clock discrepancy does not indicate a large clock change. No decoded-video or first-frame synchronization check was performed.
 
-The user confirmed that no Android phone is available and asked to continue with iPhone. Android compatibility remains pending. Next, start one short iPhone recording, switch to the Home Screen after about five seconds without pressing Stop, wait about two seconds, and return to Safari without refreshing. Check whether recording stopped and whether an interruption warning appears. The expected stop reason is `page_hidden`; actual device behavior has not yet been observed. Report the visible result before requesting another export transfer.
+### iPhone interruption result
+
+The user confirmed that no Android phone is available and asked to continue with iPhone. For the next test, they were instructed to start recording, switch to the Home Screen after about five seconds without pressing Stop, wait about two seconds, and return to Safari without refreshing.
+
+The user reported that recording stopped, an interruption message appeared, and an MP4 was saved. This passes the requested visible-behavior check on their iPhone. The implementation expects `page_hidden`; the exact JSON stop reason and interrupted clip contents were not inspected, and playback of this particular clip was not reported. The message is expected when leaving the recording page. Saving the MP4 is a local download, not a server upload.
+
+The current iPhone capture checks are sufficient to move to the next small backend milestone in the development order, while preserving the outstanding Android, media-alignment and road-quality checks. No further recording is requested for this checkpoint.
 
 ### Running the checker
 

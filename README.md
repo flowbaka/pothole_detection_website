@@ -6,7 +6,7 @@ Computer vision final-year project for Biratnagar International College, Nepal.
 
 A minimal FastAPI backend with `GET /`, `GET /health`, automatic API documentation at `/docs`, and a phone recording experiment at `/capture`.
 
-The recording page captures a short video and timestamped browser location readings, then offers two local downloads. The user confirmed iPhone camera/location access and MP4 playback both on the page and after downloading to Files. The recorder prefers H.264/MP4 when supported. A local Python checker can summarize the saved JSON and check its matching video file without printing coordinates. Actual location quality/timing and Android compatibility remain to be verified. Detection, uploads, database storage and the map are still future milestones.
+The recording page captures a short video and timestamped browser location readings, then offers two local downloads. The user confirmed iPhone camera/location access, MP4 playback both on the page and after downloading to Files, and recording stopping with an interruption message when leaving Safari. Two real iPhone exports passed the local checker's timing-consistency and video filename, size and header checks. The outdoor test still had a 4.45-second initial location gap; exact video/location alignment and road-position accuracy remain unverified. Android testing is pending because no phone is available. The recorder prefers H.264/MP4 when supported. Detection, uploads, database storage and the map are still future milestones.
 
 ## Run on Windows (PowerShell)
 
@@ -75,7 +75,7 @@ git log --oneline -5
 ## Development order
 
 1. Backend foundation — this starter.
-2. Phone feasibility experiment: iPhone camera, location and both MP4 playback checks confirmed by the user. Next: inspect the real export with the local checker, then test Android and interruptions.
+2. Phone feasibility experiment: iPhone camera, location, both MP4 playback checks and visible interruption behavior confirmed by the user; two local exports inspected. Android, exact media alignment and road-quality checks remain pending. Current iPhone checkpoint complete; proceed one small backend milestone at a time.
 3. PostgreSQL reports and photo uploads; validate files and coordinates.
 4. Leaflet/OpenStreetMap page with clickable report markers and photos, initially using manually confirmed locations.
 5. Pothole detection baseline and evaluation on held-out local Nepal footage.
