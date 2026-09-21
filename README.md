@@ -4,7 +4,7 @@ Computer vision final-year project for Biratnagar International College, Nepal.
 
 ## What works now
 
-A minimal FastAPI backend with `GET /`, `GET /health`, a PostgreSQL check at `GET /health/database`, automatic API documentation at `/docs`, and a phone recording experiment at `/capture`. The user confirmed the `pothole_app` login to `pothole_db`; the new Python connection awaits local password setup. See [database setup](docs/database-setup.md).
+A minimal FastAPI backend with `GET /`, `GET /health`, a PostgreSQL check at `GET /health/database`, automatic API documentation at `/docs`, and a phone recording experiment at `/capture`. The user confirmed the `pothole_app` login to `pothole_db`. A real local HTTP check through FastAPI now returns `{"status":"ok","database":"connected"}` using the saved local settings. No project tables have been created by the application yet. See [database setup](docs/database-setup.md).
 
 The recording page captures a short video and timestamped browser location readings, then offers two local downloads. The user confirmed iPhone camera/location access, MP4 playback both on the page and after downloading to Files, and recording stopping with an interruption message when leaving Safari. Two real iPhone exports passed the local checker's timing-consistency and video filename, size and header checks. The outdoor test still had a 4.45-second initial location gap; exact video/location alignment and road-position accuracy remain unverified. Android testing is pending because no phone is available. The recorder prefers H.264/MP4 when supported. Detection, uploads, database storage and the map are still future milestones.
 

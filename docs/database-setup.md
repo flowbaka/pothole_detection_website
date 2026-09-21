@@ -1,6 +1,6 @@
 # Database setup: login and project database
 
-The user has confirmed creation of `pothole_db`, creation and grants for `pothole_app`, and a successful password-authenticated login as `pothole_app` with superuser off. The current milestone connects FastAPI to PostgreSQL. Code and local configuration helper are prepared; the real Python connection awaits the user's password entry on their laptop.
+The user has confirmed creation of `pothole_db`, creation and grants for `pothole_app`, and a successful password-authenticated login as `pothole_app` with superuser off. Local settings are now saved, and a real HTTP request through FastAPI successfully reached PostgreSQL. The database connection checkpoint is complete. The next small milestone will add the first report table.
 
 ## Verified locally
 
@@ -10,7 +10,8 @@ The user has confirmed creation of `pothole_db`, creation and grants for `pothol
 - The initial connection attempt without a password returned `no password supplied`. The user then ran the password-prompted command and supplied successful connection information: database/user `postgres`, host `127.0.0.1`, port `5432`.
 - The user's output confirmed `CREATE DATABASE` and a row showing `pothole_db` owned by `postgres`.
 - The user confirmed `pothole_app` with superuser `f` and login/connection/table-creation privileges `t`. A subsequent `\conninfo` confirmed password-authenticated access as `pothole_app` to `pothole_db`, host `127.0.0.1`, port `5432`, superuser off.
-- A successful connection through the new Python driver and endpoint has not yet been demonstrated with the real application password.
+- A real HTTP check through a temporary localhost-only Uvicorn server returned HTTP 200 from `/health` and `/health/database`, with the latter returning `{"status":"ok","database":"connected"}`. This used the existing local `.env` through the application's normal configuration path, with no mocked database driver. Password values were not displayed.
+- The temporary server was stopped after checking. Port 8001 did not return a successful database-health response before this check; start the development server with the command below to view the result in a browser.
 
 ## User step: verify your login
 
@@ -61,7 +62,7 @@ The changes run in a transaction. Connecting to the wrong database, an existing 
 
 The user ran this step and supplied successful permission results, then confirmed a separate login as `pothole_app`. The backend can now be configured with that account.
 
-## Current user step: configure the Python connection
+## Completed step: configure and verify the Python connection
 
 The project's virtual environment now includes Psycopg 3.3.6 and python-dotenv 1.2.3. On another checkout, install `requirements.txt` first. Run:
 
@@ -82,13 +83,13 @@ After setup succeeds, start or restart the API in PowerShell:
 
 Open `http://127.0.0.1:8001/health/database`. Success returns HTTP 200 and `{"status":"ok","database":"connected"}`. Missing/invalid settings or a database failure return HTTP 503 with a generic message, never the driver exception or password. `GET /health` still checks only the API process. The database check uses a three-second connection timeout and a three-second statement timeout. It creates no tables and uploads no recordings.
 
-Seven automated tests cover missing configuration, invalid ports, literal password handling and environment precedence, connection cleanup, real driver refusal on an unused local port, setup success/failure, and API success/error responses with sanitized output. Successful database queries in tests are simulated; they are not evidence of authentication with the user's password. Run:
+Seven automated tests cover missing configuration, invalid ports, literal password handling and environment precedence, connection cleanup, real driver refusal on an unused local port, setup success/failure, and API success/error responses with sanitized output. Successful database queries in these unit tests are simulated. Separately, the real HTTP check described above verified a successful query using the saved local settings. Run the unit tests with:
 
 ```powershell
 .\.pothholevenv\Scripts\python.exe -m unittest discover -s tests -p test_database.py -v
 ```
 
-The next checkpoint after a real successful API check will add the first report table.
+The real API check is complete. It ran only `SELECT 1`, so it does not establish that report tables or uploads exist. The next checkpoint will add the first report table.
 
 Driver/configuration references: [Psycopg connections](https://www.psycopg.org/psycopg3/docs/basic/usage.html), [python-dotenv](https://bbc2.github.io/python-dotenv/reference/).
 
