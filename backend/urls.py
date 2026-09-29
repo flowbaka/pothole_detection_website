@@ -8,4 +8,5 @@ from . import views
 urlpatterns = [
     path("", views.home, name="home"),
     path("health/", views.health, name="health"),
+    path("health/database/", views.database_health, name="database_health"),
 ]

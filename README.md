@@ -4,7 +4,7 @@ Computer vision final-year project for Biratnagar International College, Nepal.
 
 ## What works now
 
-The backend is moving from FastAPI to Django in small lessons. [Django lesson 1](docs/django-step-1.md) adds `GET /` and `GET /health/` on local port 8003 to teach the request → URL → view → response flow. This first Django step does not connect to PostgreSQL yet. The previously tested FastAPI server remains available on port 8001 for the phone recording experiment while that route is migrated. It has an existing real connection to `pothole_db` with `pothole_app`. No report tables have been created yet. See [database setup](docs/database-setup.md).
+The backend is moving from FastAPI to Django in small lessons. [Django lesson 1](docs/django-step-1.md) adds `GET /` and `GET /health/` on local port 8003. [Django lesson 2](docs/django-step-2.md) connects it to PostgreSQL through `GET /health/database/`; a real HTTP request confirmed access to `pothole_db` with the existing local settings. The previously tested FastAPI server remains available on port 8001 for the phone recording experiment while that route is migrated. No report tables have been created yet. See [database setup](docs/database-setup.md).
 
 The recording page captures a short video and timestamped browser location readings, then offers two local downloads. The user confirmed iPhone camera/location access, MP4 playback both on the page and after downloading to Files, and recording stopping with an interruption message when leaving Safari. Two real iPhone exports passed the local checker's timing-consistency and video filename, size and header checks. The outdoor test still had a 4.45-second initial location gap; exact video/location alignment and road-position accuracy remain unverified. Android testing is pending because no phone is available. The recorder prefers H.264/MP4 when supported. Detection, uploads, database storage and the map are still future milestones.
 
@@ -35,7 +35,7 @@ Open http://127.0.0.1:8003 to see:
 {"message":"Django backend is running"}
 ```
 
-Open http://127.0.0.1:8003/health/ to see `{"status":"ok"}`. Stop the server with Ctrl+C. The next lesson will connect this Django server to PostgreSQL.
+Open http://127.0.0.1:8003/health/ to see `{"status":"ok"}` and http://127.0.0.1:8003/health/database/ to see `{"status":"ok","database":"connected"}`. Stop the server with Ctrl+C.
 
 The existing phone recording page still runs through the earlier FastAPI server at http://127.0.0.1:8001/capture. Start it separately with `.\.pothholevenv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8001` if needed. Its [local HTTPS setup](docs/phone-https.md) is unchanged. See the [phone experiment guide](docs/phone-test.md). The web application has not been deployed.
 
@@ -44,7 +44,7 @@ The existing phone recording page still runs through the earlier FastAPI server 
 | File | Purpose |
 |---|---|
 | `manage.py` | Runs Django commands such as `runserver`, `check` and `test`. |
-| `backend/settings.py` | First Django configuration; PostgreSQL will be added in the next lesson. |
+| `backend/settings.py` | Django configuration, including the local PostgreSQL connection. |
 | `backend/urls.py` | Connects URL paths to Django views. |
 | `backend/views.py` | Returns JSON responses for the first two routes. |
 | `backend/tests.py` | Checks the Django URL-to-view behavior. |
@@ -83,7 +83,7 @@ git log --oneline -5
 
 ## Development order
 
-1. Django backend foundation — first two routes implemented; PostgreSQL setup is next.
+1. Django backend foundation — request handling and PostgreSQL connection verified. The first report model and migration are next.
 2. Phone feasibility experiment: iPhone camera, location, both MP4 playback checks and visible interruption behavior confirmed by the user; two local exports inspected. Android, exact media alignment and road-quality checks remain pending. Current iPhone checkpoint complete; proceed one small backend milestone at a time.
 3. PostgreSQL reports and photo uploads; validate files and coordinates.
 4. Leaflet/OpenStreetMap page with clickable report markers and photos, initially using manually confirmed locations.

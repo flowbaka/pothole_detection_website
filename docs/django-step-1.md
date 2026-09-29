@@ -42,6 +42,6 @@ The short route flow is: **browser URL → Django URL rule → Python view → J
 .\.pothholevenv\Scripts\python.exe manage.py test backend.tests
 ```
 
-Both tests and the system check passed locally. The next lesson will configure Django to use the existing `pothole_db` with the `pothole_app` account. Until then, `/health/` means that Django responds; it does not check PostgreSQL.
+Both tests and the system check passed locally. [Lesson 2](django-step-2.md) now configures Django to use the existing `pothole_db` with the `pothole_app` account. `/health/` means Django responds; `/health/database/` checks PostgreSQL.
 
 Django 5.2 is a [long-term support release compatible with Python 3.13](https://docs.djangoproject.com/en/5.2/releases/5.2/). The [official first-app tutorial](https://docs.djangoproject.com/en/5.2/intro/tutorial01/) also introduces project structure, URL rules and views.
